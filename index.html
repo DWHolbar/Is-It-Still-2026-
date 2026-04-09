@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is It Still 2026?</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <nav id="year-selector" aria-label="Select year"></nav>
+
+    <header id="question-block">
+      <h1>Is It Still <span id="display-year">2026</span>?</h1>
+    </header>
+
+    <section id="verdict" class="verdict-yes">
+      <div id="verdict-text">YES</div>
+      <p id="verdict-sub"></p>
+    </section>
+
+    <section id="time-display">
+      <div id="countdown">
+        <div class="time-unit">
+          <span class="number" id="val-weeks">00</span>
+          <span class="label">weeks</span>
+        </div>
+        <div class="time-unit">
+          <span class="number" id="val-days">00</span>
+          <span class="label">days</span>
+        </div>
+        <div class="time-unit">
+          <span class="number" id="val-hours">00</span>
+          <span class="label">hours</span>
+        </div>
+        <div class="time-unit">
+          <span class="number" id="val-minutes">00</span>
+          <span class="label">minutes</span>
+        </div>
+        <div class="time-unit">
+          <span class="number" id="val-seconds">00</span>
+          <span class="label">seconds</span>
+        </div>
+      </div>
+
+      <div id="time-ago" class="hidden">
+        <p id="time-ago-text"></p>
+      </div>
+    </section>
+
+    <footer>
+      <p>Time shown in your local timezone</p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

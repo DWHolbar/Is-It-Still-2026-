@@ -1,0 +1,213 @@
+:root {
+  --bg-start: #0a0a1a;
+  --bg-end: #1a0a2e;
+
+  --yes-color: #00ff88;
+  --yes-glow: 0 0 40px #00ff88aa;
+  --no-color: #ff4466;
+  --no-glow: 0 0 40px #ff4466aa;
+
+  --text-primary: #ffffff;
+  --text-secondary: #aaaacc;
+  --tile-bg: rgba(255, 255, 255, 0.05);
+  --tile-border: rgba(255, 255, 255, 0.1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text-primary);
+  padding: 2rem 1rem;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* ── Year Selector ── */
+
+#year-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.year-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--tile-border);
+  background: var(--tile-bg);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.year-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.year-btn.active {
+  background: var(--text-primary);
+  color: var(--bg-start);
+  font-weight: 700;
+  border-color: var(--text-primary);
+}
+
+/* ── Question Header ── */
+
+#question-block h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+/* ── Verdict ── */
+
+#verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#verdict-text {
+  font-size: clamp(5rem, 20vw, 12rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+
+.verdict-yes #verdict-text {
+  color: var(--yes-color);
+  text-shadow: var(--yes-glow);
+  animation: pulse-yes 2.5s ease-in-out infinite;
+}
+
+.verdict-no #verdict-text {
+  color: var(--no-color);
+  text-shadow: var(--no-glow);
+}
+
+@keyframes pulse-yes {
+  0%, 100% { text-shadow: 0 0 20px #00ff88aa; }
+  50% { text-shadow: 0 0 70px #00ff88ff, 0 0 140px #00ff8833; }
+}
+
+#verdict-sub {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ── Countdown Tiles ── */
+
+#time-display {
+  width: 100%;
+}
+
+#countdown {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.time-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--tile-bg);
+  border: 1px solid var(--tile-border);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  min-width: 90px;
+  backdrop-filter: blur(10px);
+}
+
+.time-unit .number {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.time-unit .label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.flash {
+  animation: flash-tick 0.25s ease-out;
+}
+
+@keyframes flash-tick {
+  0% { opacity: 0.4; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ── Time Ago ── */
+
+#time-ago {
+  text-align: center;
+  padding: 2rem;
+}
+
+#time-ago-text {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── Footer ── */
+
+footer {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* ── Utility ── */
+
+.hidden {
+  display: none;
+}
+
+/* ── Mobile ── */
+
+@media (max-width: 480px) {
+  .time-unit {
+    min-width: 70px;
+    padding: 1rem 0.75rem;
+  }
+
+  #countdown {
+    gap: 0.5rem;
+  }
+}
