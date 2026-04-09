@@ -1,17 +1,19 @@
-# Is It Still 2026?
+# Days Until
 
-A live countdown timer that answers the eternal question: **Is it still [YEAR]?**
+A live countdown timer showing exactly how many days, hours, minutes, and seconds remain until any year or custom event.
 
-Pick any year from 2026 to 2030 and get an instant YES or NO with a real-time countdown showing exactly how many weeks, days, hours, minutes, and seconds remain — or how long ago that year ended.
+Pick a year (2027–2050) or create a custom event — birthday, wedding, anniversary, graduation, and more — and get a real-time countdown to that date.
 
 ## Features
 
-- Live countdown to December 31st of the selected year
-- Supports years 2026 – 2030
-- Shows YES (green) or NO (red) with time remaining / time elapsed
-- Updates every second
-- Works in your local timezone
+- Countdown to any year from 2027 to 2050 (counts to New Year's Day)
+- Custom events: birthday, anniversary, wedding, baby shower, graduation, vacation, and more
+- Days view (default) or Weeks view toggle
+- Add to Google Calendar in one click
+- 6 mood wallpapers: Dusk City, Night City, Golden Hour, Deep Ocean, Forest, Aurora
+- Updates every second in your local timezone
 - Mobile responsive
+- Preferences (mood, display mode) saved locally
 
 ## Run Locally
 
