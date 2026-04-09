@@ -37,18 +37,71 @@ body {
 #bg-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    #2a1640 0%,
-    #4a2860 12%,
-    #7a4070 28%,
-    #a85e7a 42%,
-    #c87880 55%,
-    #d49070 68%,
-    #c8a87a 80%,
-    #b09888 100%
-  );
+  transition: background 0.7s ease;
 }
+
+/* Dusk (default) */
+body[data-mood="dusk"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #2a1640 0%, #4a2860 12%, #7a4070 28%,
+    #a85e7a 42%, #c87880 55%, #d49070 68%,
+    #c8a87a 80%, #b09888 100%);
+}
+/* Night */
+body[data-mood="night"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #000005 0%, #020510 15%, #040a22 30%,
+    #06102e 50%, #040e28 70%, #020818 85%, #010408 100%);
+}
+/* Golden Hour */
+body[data-mood="golden"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #1a0a02 0%, #4a1a06 15%, #882808 30%,
+    #c04a18 45%, #d87030 60%, #e89838 75%,
+    #f0b840 88%, #f8d050 100%);
+}
+/* Ocean */
+body[data-mood="ocean"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #010a15 0%, #031420 15%, #052030 30%,
+    #083040 48%, #0a4055 65%, #0c5268 80%,
+    #126280 92%, #1a7090 100%);
+}
+/* Forest */
+body[data-mood="forest"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #010805 0%, #041008 15%, #071820 30%,
+    #0a2215 48%, #0e2e18 65%, #123820 80%,
+    #1a4828 92%, #225830 100%);
+}
+/* Aurora */
+body[data-mood="aurora"] #bg-gradient {
+  background: linear-gradient(180deg,
+    #04021a 0%, #080530 15%, #0a0840 30%,
+    #061828 48%, #081e28 65%, #0a2828 80%,
+    #083028 92%, #062020 100%);
+}
+
+/* City silhouette fill per mood */
+#cityscape path { fill: rgba(32, 18, 50, 0.82); transition: fill 0.7s ease; }
+body[data-mood="night"]  #cityscape path { fill: rgba(0, 0, 8, 0.92); }
+body[data-mood="golden"] #cityscape path { fill: rgba(12, 5, 0, 0.86); }
+body[data-mood="ocean"]  #cityscape path { fill: rgba(0, 6, 16, 0.88); }
+body[data-mood="forest"] #cityscape path { fill: rgba(0, 6, 2, 0.88); }
+body[data-mood="aurora"] #cityscape path { fill: rgba(2, 0, 12, 0.88); }
+
+/* Mountain fill per mood */
+#mountains path { transition: fill 0.7s ease; }
+body[data-mood="night"]  #mountains path:first-child { fill: rgba(2, 5, 20, 0.5); }
+body[data-mood="night"]  #mountains path:last-child  { fill: rgba(2, 4, 18, 0.6); }
+body[data-mood="golden"] #mountains path:first-child { fill: rgba(20, 8, 0, 0.5); }
+body[data-mood="golden"] #mountains path:last-child  { fill: rgba(18, 6, 0, 0.6); }
+body[data-mood="ocean"]  #mountains path:first-child { fill: rgba(0, 10, 25, 0.5); }
+body[data-mood="ocean"]  #mountains path:last-child  { fill: rgba(0, 8, 22, 0.6); }
+body[data-mood="forest"] #mountains path:first-child { fill: rgba(2, 12, 4, 0.5); }
+body[data-mood="forest"] #mountains path:last-child  { fill: rgba(2, 10, 3, 0.6); }
+body[data-mood="aurora"] #mountains path:first-child { fill: rgba(4, 4, 22, 0.5); }
+body[data-mood="aurora"] #mountains path:last-child  { fill: rgba(3, 3, 20, 0.6); }
 
 #mountains {
   position: absolute;
@@ -74,7 +127,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.4rem;
   width: 100%;
   max-width: 860px;
 }
@@ -106,10 +159,7 @@ body {
   transition: all 0.25s ease;
 }
 
-.mode-tab:hover {
-  color: var(--text-primary);
-}
-
+.mode-tab:hover { color: var(--text-primary); }
 .mode-tab.active {
   background: var(--glass-active);
   color: var(--text-primary);
@@ -124,17 +174,19 @@ body {
   justify-content: center;
 }
 
-/* ── Select Wrapper (shared) ── */
+/* ── Select wrapper (shared) ── */
 
 .select-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .select-wrapper select {
   appearance: none;
   -webkit-appearance: none;
+  width: 100%;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 999px;
@@ -148,7 +200,6 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: background 0.2s ease, border-color 0.2s ease;
-  width: 100%;
 }
 
 .select-wrapper select:hover,
@@ -169,13 +220,16 @@ body {
   font-size: 1rem;
   color: var(--text-secondary);
   pointer-events: none;
-  line-height: 1;
 }
 
-/* Year dropdown: larger */
+#panel-year .select-wrapper {
+  max-width: 220px;
+}
+
 #panel-year .select-wrapper select {
   font-size: 1.1rem;
   padding: 0.65rem 3rem 0.65rem 1.6rem;
+  text-align: center;
 }
 
 /* ── Event Form ── */
@@ -188,10 +242,7 @@ body {
   max-width: 560px;
 }
 
-.form-row {
-  display: flex;
-  gap: 0.75rem;
-}
+.form-row { display: flex; gap: 0.75rem; }
 
 .form-row.two-col {
   display: grid;
@@ -199,9 +250,7 @@ body {
   gap: 0.75rem;
 }
 
-.input-wrapper {
-  flex: 1;
-}
+.input-wrapper { flex: 1; }
 
 input[type="text"],
 input[type="date"] {
@@ -222,28 +271,18 @@ input[type="date"] {
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-input[type="text"]::placeholder {
-  color: var(--text-secondary);
-}
+input[type="text"]::placeholder { color: var(--text-secondary); }
 
-input[type="text"]:hover,
-input[type="text"]:focus,
-input[type="date"]:hover,
-input[type="date"]:focus {
+input[type="text"]:hover, input[type="text"]:focus,
+input[type="date"]:hover,  input[type="date"]:focus {
   background: var(--glass-hover);
   border-color: rgba(255, 255, 255, 0.38);
   outline: none;
 }
 
-/* Date input calendar icon color on webkit */
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) opacity(0.5);
   cursor: pointer;
-}
-
-/* Color scheme for date input */
-input[type="date"]::-webkit-datetime-edit {
-  color: var(--text-primary);
 }
 
 #set-event-btn {
@@ -259,7 +298,6 @@ input[type="date"]::-webkit-datetime-edit {
   letter-spacing: 0.04em;
   cursor: pointer;
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   transition: all 0.2s ease;
 }
 
@@ -274,12 +312,12 @@ input[type="date"]::-webkit-datetime-edit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.15rem;
   text-align: center;
 }
 
 #header-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 300;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -292,15 +330,47 @@ input[type="date"]::-webkit-datetime-edit {
   letter-spacing: 0.04em;
   color: var(--text-primary);
   line-height: 1.1;
-  max-width: 820px;
   word-break: break-word;
+  max-width: 820px;
+}
+
+/* ── Display Toggle (Days / Weeks) ── */
+
+#display-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.22rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.disp-btn {
+  padding: 0.28rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.disp-btn:hover { color: var(--text-primary); }
+.disp-btn.active {
+  background: var(--glass-active);
+  color: var(--text-primary);
+  font-weight: 400;
 }
 
 /* ── Countdown Tiles ── */
 
-#time-display {
-  width: 100%;
-}
+#time-display { width: 100%; }
 
 #countdown {
   display: flex;
@@ -308,6 +378,10 @@ input[type="date"]::-webkit-datetime-edit {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+/* Weeks tile hidden by default (days mode) */
+#tile-weeks { display: none; }
+body.show-weeks #tile-weeks { display: flex; }
 
 .time-unit {
   display: flex;
@@ -344,16 +418,13 @@ input[type="date"]::-webkit-datetime-edit {
 }
 
 @keyframes flash-tick {
-  0% { opacity: 0.4; transform: scale(1.06); }
-  100% { opacity: 1; transform: scale(1); }
+  0%   { opacity: 0.4; transform: scale(1.06); }
+  100% { opacity: 1;   transform: scale(1); }
 }
 
 /* ── Time Ago ── */
 
-#time-ago {
-  text-align: center;
-  padding: 2rem;
-}
+#time-ago { text-align: center; padding: 2rem; }
 
 #time-ago-text {
   font-size: clamp(1.1rem, 3vw, 1.4rem);
@@ -361,6 +432,75 @@ input[type="date"]::-webkit-datetime-edit {
   letter-spacing: 0.03em;
   color: var(--text-secondary);
   line-height: 1.7;
+}
+
+/* ── Google Calendar Button ── */
+
+#gcal-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+#gcal-btn:hover {
+  background: var(--glass-hover);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Mood Picker ── */
+
+#mood-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.mood-label {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.mood-swatches {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.mood-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+}
+
+.mood-swatch:hover {
+  transform: scale(1.18);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.mood-swatch.active {
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: scale(1.12);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 /* ── Footer ── */
@@ -375,23 +515,12 @@ footer {
 
 /* ── Utility ── */
 
-.hidden {
-  display: none;
-}
+.hidden { display: none !important; }
 
 /* ── Mobile ── */
 
 @media (max-width: 560px) {
-  .form-row.two-col {
-    grid-template-columns: 1fr;
-  }
-
-  .time-unit {
-    min-width: 68px;
-    padding: 0.9rem 0.7rem;
-  }
-
-  #countdown {
-    gap: 0.4rem;
-  }
+  .form-row.two-col { grid-template-columns: 1fr; }
+  .time-unit { min-width: 68px; padding: 0.9rem 0.7rem; }
+  #countdown { gap: 0.4rem; }
 }

@@ -1,17 +1,31 @@
 const YEAR_FROM = 2027;
 const YEAR_TO   = 2050;
 
-let mode = 'year';          // 'year' | 'event'
+let mode        = 'year';   // 'year' | 'event'
+let displayMode = 'days';   // 'days' | 'weeks'
 let selectedYear = YEAR_FROM;
 let activeEvent  = null;    // { label, date }
 let timerHandle  = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadPreferences();
   buildYearDropdown();
   initModeTabs();
+  initDisplayToggle();
   initEventForm();
-  startTimer();
+  initGCalBtn();
+  initMoodPicker();
+  setTarget(String(selectedYear));
 });
+
+// ── Preferences (localStorage) ────────────────────────────
+
+function loadPreferences() {
+  const savedMood = localStorage.getItem('mood') || 'dusk';
+  const savedDisp = localStorage.getItem('displayMode') || 'days';
+  applyMood(savedMood);
+  applyDisplayMode(savedDisp);
+}
 
 // ── Year dropdown ──────────────────────────────────────────
 
@@ -42,7 +56,6 @@ function initModeTabs() {
       document.querySelectorAll('.mode-tab').forEach(t =>
         t.classList.toggle('active', t.dataset.mode === m)
       );
-
       document.getElementById('panel-year').classList.toggle('hidden', m !== 'year');
       document.getElementById('panel-event').classList.toggle('hidden', m !== 'event');
 
@@ -51,59 +64,111 @@ function initModeTabs() {
       } else if (activeEvent) {
         setTarget(activeEvent.label);
       } else {
-        // Show form, blank out header until user submits
         document.getElementById('display-target').textContent = '—';
         document.title = 'Days Until';
+        document.getElementById('gcal-btn').classList.add('hidden');
         stopTimer();
       }
     });
   });
 }
 
-// ── Event form ─────────────────────────────────────────────
+// ── Display toggle (Days / Weeks) ─────────────────────────
 
-function initEventForm() {
-  // Set today as default date
-  const dateInput = document.getElementById('event-date');
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm   = String(today.getMonth() + 1).padStart(2, '0');
-  const dd   = String(today.getDate()).padStart(2, '0');
-  dateInput.value = `${yyyy}-${mm}-${dd}`;
-
-  document.getElementById('set-event-btn').addEventListener('click', submitEvent);
-  document.getElementById('event-date').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitEvent();
-  });
-  document.getElementById('event-name').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitEvent();
+function initDisplayToggle() {
+  document.querySelectorAll('.disp-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyDisplayMode(btn.dataset.disp);
+      localStorage.setItem('displayMode', btn.dataset.disp);
+    });
   });
 }
 
+function applyDisplayMode(disp) {
+  displayMode = disp;
+  document.body.classList.toggle('show-weeks', disp === 'weeks');
+  document.querySelectorAll('.disp-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.disp === disp)
+  );
+}
+
+// ── Event form ─────────────────────────────────────────────
+
+function initEventForm() {
+  const dateInput = document.getElementById('event-date');
+  const today = new Date();
+  dateInput.value = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+
+  document.getElementById('set-event-btn').addEventListener('click', submitEvent);
+  dateInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitEvent(); });
+  document.getElementById('event-name').addEventListener('keydown', e => { if (e.key === 'Enter') submitEvent(); });
+}
+
 function submitEvent() {
-  const typeSelect = document.getElementById('event-type');
-  const nameInput  = document.getElementById('event-name');
-  const dateInput  = document.getElementById('event-date');
+  const type    = document.getElementById('event-type').value;
+  const nameRaw = document.getElementById('event-name').value.trim();
+  const dateStr = document.getElementById('event-date').value;
 
-  const type      = typeSelect.value;
-  const nameRaw   = nameInput.value.trim();
-  const dateStr   = dateInput.value;
+  if (!dateStr) { document.getElementById('event-date').focus(); return; }
 
-  if (!dateStr) {
-    dateInput.focus();
-    return;
-  }
-
-  // Parse the date locally (avoid UTC timezone shift from new Date(string))
   const [y, m, d] = dateStr.split('-').map(Number);
   const eventDate = new Date(y, m - 1, d, 0, 0, 0, 0);
-
-  const label = nameRaw || `your ${type}`;
+  const label     = nameRaw || `your ${type}`;
 
   activeEvent = { label, date: eventDate };
   mode = 'event';
-
   setTarget(label);
+}
+
+// ── Google Calendar ────────────────────────────────────────
+
+function initGCalBtn() {
+  document.getElementById('gcal-btn').addEventListener('click', openGoogleCalendar);
+}
+
+function openGoogleCalendar() {
+  const target = getTargetDate();
+  const label  = document.getElementById('display-target').textContent;
+  if (!target || label === '—') return;
+
+  const start   = fmtDate(target);
+  const endDate = new Date(target);
+  endDate.setDate(endDate.getDate() + 1);
+  const end = fmtDate(endDate);
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text:   label,
+    dates:  `${start}/${end}`,
+  });
+
+  window.open(
+    `https://calendar.google.com/calendar/render?${params.toString()}`,
+    '_blank',
+    'noopener,noreferrer'
+  );
+}
+
+function fmtDate(d) {
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+}
+
+// ── Mood picker ────────────────────────────────────────────
+
+function initMoodPicker() {
+  document.querySelectorAll('.mood-swatch').forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      applyMood(swatch.dataset.mood);
+      localStorage.setItem('mood', swatch.dataset.mood);
+    });
+  });
+}
+
+function applyMood(mood) {
+  document.body.dataset.mood = mood;
+  document.querySelectorAll('.mood-swatch').forEach(s =>
+    s.classList.toggle('active', s.dataset.mood === mood)
+  );
 }
 
 // ── Timer core ─────────────────────────────────────────────
@@ -111,6 +176,7 @@ function submitEvent() {
 function setTarget(label) {
   document.getElementById('display-target').textContent = label;
   document.title = `Days until ${label}`;
+  document.getElementById('gcal-btn').classList.remove('hidden');
   startTimer();
 }
 
@@ -121,20 +187,12 @@ function startTimer() {
 }
 
 function stopTimer() {
-  if (timerHandle) {
-    clearInterval(timerHandle);
-    timerHandle = null;
-  }
+  if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
 }
 
 function getTargetDate() {
-  if (mode === 'year') {
-    // Count to Jan 1 of selected year (New Year)
-    return new Date(selectedYear, 0, 1, 0, 0, 0, 0);
-  }
-  if (activeEvent) {
-    return activeEvent.date;
-  }
+  if (mode === 'year')       return new Date(selectedYear, 0, 1, 0, 0, 0, 0);
+  if (activeEvent)           return activeEvent.date;
   return null;
 }
 
@@ -142,46 +200,62 @@ function tick() {
   const target = getTargetDate();
   if (!target) return;
 
-  const diffMs  = target - Date.now();
-  const isFuture = diffMs > 0;
+  const absMs    = Math.abs(target - Date.now());
+  const isFuture = target > Date.now();
 
   if (isFuture) {
-    updateCountdown(decompose(diffMs));
+    renderCountdown(absMs);
     show('countdown');
     hide('time-ago');
   } else {
-    updateTimeAgo(decompose(diffMs));
+    renderTimeAgo(absMs);
     show('time-ago');
     hide('countdown');
   }
 }
 
-// ── Time math ──────────────────────────────────────────────
+// ── Countdown rendering ────────────────────────────────────
 
-function decompose(diffMs) {
-  const totalSeconds = Math.floor(Math.abs(diffMs) / 1000);
-  const totalMinutes = Math.floor(totalSeconds / 60);
-  const totalHours   = Math.floor(totalMinutes / 60);
-  const totalDays    = Math.floor(totalHours   / 24);
-  const totalWeeks   = Math.floor(totalDays    / 7);
-  return {
-    weeks:   totalWeeks,
-    days:    totalDays    % 7,
-    hours:   totalHours   % 24,
-    minutes: totalMinutes % 60,
-    seconds: totalSeconds % 60,
-  };
+function renderCountdown(absMs) {
+  const totalSec  = Math.floor(absMs / 1000);
+  const totalMin  = Math.floor(totalSec  / 60);
+  const totalHrs  = Math.floor(totalMin  / 60);
+  const totalDays = Math.floor(totalHrs  / 24);
+
+  if (displayMode === 'days') {
+    setValue('val-days', totalDays);
+  } else {
+    setValue('val-weeks', Math.floor(totalDays / 7));
+    setValue('val-days',  totalDays % 7);
+  }
+  setValue('val-hours',   totalHrs  % 24);
+  setValue('val-minutes', totalMin  % 60);
+  setValue('val-seconds', totalSec  % 60, true);
 }
 
-// ── DOM updates ────────────────────────────────────────────
+function renderTimeAgo(absMs) {
+  const totalSec  = Math.floor(absMs / 1000);
+  const totalMin  = Math.floor(totalSec  / 60);
+  const totalHrs  = Math.floor(totalMin  / 60);
+  const totalDays = Math.floor(totalHrs  / 24);
 
-function updateCountdown({ weeks, days, hours, minutes, seconds }) {
-  setValue('val-weeks',   weeks);
-  setValue('val-days',    days);
-  setValue('val-hours',   hours);
-  setValue('val-minutes', minutes);
-  setValue('val-seconds', seconds, true);
+  let summary;
+  if (displayMode === 'days') {
+    summary = `${totalDays.toLocaleString()} day${totalDays !== 1 ? 's' : ''}`;
+  } else {
+    const weeks   = Math.floor(totalDays / 7);
+    const remDays = totalDays % 7;
+    const parts   = [];
+    if (weeks   > 0) parts.push(`${weeks} week${weeks !== 1 ? 's' : ''}`);
+    if (remDays > 0) parts.push(`${remDays} day${remDays !== 1 ? 's' : ''}`);
+    summary = parts.length ? parts.join(', ') : '0 days';
+  }
+
+  const label = document.getElementById('display-target').textContent;
+  document.getElementById('time-ago-text').textContent = `${label} was ${summary} ago.`;
 }
+
+// ── Helpers ────────────────────────────────────────────────
 
 function setValue(id, value, flash) {
   const el = document.getElementById(id);
@@ -193,19 +267,6 @@ function setValue(id, value, flash) {
   }
 }
 
-function updateTimeAgo({ weeks, days, hours, minutes, seconds }) {
-  const parts = [];
-  if (weeks   > 0) parts.push(`${weeks} week${weeks !== 1 ? 's' : ''}`);
-  if (days    > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
-  if (hours   > 0) parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
-  if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
-  if (parts.length === 0) parts.push(`${seconds} second${seconds !== 1 ? 's' : ''}`);
-
-  const label = document.getElementById('display-target').textContent;
-  const summary = parts.slice(0, 3).join(', ');
-  document.getElementById('time-ago-text').textContent =
-    `${label} was ${summary} ago.`;
-}
-
+function pad(n)   { return String(n).padStart(2, '0'); }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
