@@ -1,14 +1,10 @@
 :root {
-  --yes-color: rgba(255, 255, 255, 0.95);
-  --yes-glow: 0 0 60px rgba(255, 220, 200, 0.4);
-  --no-color: rgba(255, 180, 170, 0.95);
-  --no-glow: 0 0 60px rgba(255, 140, 130, 0.35);
-
   --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --glass-bg: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.22);
-  --glass-hover: rgba(255, 255, 255, 0.2);
+  --text-secondary: rgba(255, 255, 255, 0.52);
+  --glass-bg: rgba(255, 255, 255, 0.11);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-hover: rgba(255, 255, 255, 0.18);
+  --glass-active: rgba(255, 255, 255, 0.26);
 }
 
 *, *::before, *::after {
@@ -78,98 +74,226 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.75rem;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 860px;
 }
 
-/* ── Year Selector ── */
+/* ── Mode Tabs ── */
 
-#year-selector {
+#mode-tabs {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.year-btn {
-  padding: 0.45rem 1.2rem;
-  border-radius: 999px;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.15);
   border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  color: var(--text-secondary);
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 300;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  border-radius: 999px;
+  padding: 0.3rem;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-.year-btn:hover {
-  background: var(--glass-hover);
-  color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.4);
+.mode-tab {
+  padding: 0.45rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-.year-btn.active {
-  background: rgba(255, 255, 255, 0.28);
+.mode-tab:hover {
+  color: var(--text-primary);
+}
+
+.mode-tab.active {
+  background: var(--glass-active);
   color: var(--text-primary);
   font-weight: 400;
-  border-color: rgba(255, 255, 255, 0.55);
 }
 
-/* ── Question Header ── */
+/* ── Panels ── */
 
-#question-block h1 {
-  font-size: clamp(1.8rem, 5vw, 3.2rem);
-  font-weight: 200;
-  letter-spacing: 0.04em;
-  text-align: center;
+.panel {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Select Wrapper (shared) ── */
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-wrapper select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  padding: 0.55rem 2.8rem 0.55rem 1.4rem;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.2s ease, border-color 0.2s ease;
+  width: 100%;
+}
+
+.select-wrapper select:hover,
+.select-wrapper select:focus {
+  background: var(--glass-hover);
+  border-color: rgba(255, 255, 255, 0.38);
+  outline: none;
+}
+
+.select-wrapper select option {
+  background: #3a2055;
+  color: #fff;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1rem;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* Year dropdown: larger */
+#panel-year .select-wrapper select {
+  font-size: 1.1rem;
+  padding: 0.65rem 3rem 0.65rem 1.6rem;
+}
+
+/* ── Event Form ── */
+
+#event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 560px;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-row.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.input-wrapper {
+  flex: 1;
+}
+
+input[type="text"],
+input[type="date"] {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  padding: 0.55rem 1.4rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+input[type="text"]::placeholder {
+  color: var(--text-secondary);
+}
+
+input[type="text"]:hover,
+input[type="text"]:focus,
+input[type="date"]:hover,
+input[type="date"]:focus {
+  background: var(--glass-hover);
+  border-color: rgba(255, 255, 255, 0.38);
+  outline: none;
+}
+
+/* Date input calendar icon color on webkit */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.5);
+  cursor: pointer;
+}
+
+/* Color scheme for date input */
+input[type="date"]::-webkit-datetime-edit {
   color: var(--text-primary);
 }
 
-/* ── Verdict ── */
+#set-event-btn {
+  align-self: center;
+  padding: 0.65rem 2.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: var(--glass-active);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
 
-#verdict {
+#set-event-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Countdown Header ── */
+
+#countdown-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-}
-
-#verdict-text {
-  font-size: clamp(5rem, 20vw, 11rem);
-  font-weight: 100;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  transition: color 0.5s ease, text-shadow 0.5s ease;
-}
-
-.verdict-yes #verdict-text {
-  color: var(--yes-color);
-  text-shadow: var(--yes-glow);
-  animation: breathe 3s ease-in-out infinite;
-}
-
-.verdict-no #verdict-text {
-  color: var(--no-color);
-  text-shadow: var(--no-glow);
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: 0.88; text-shadow: 0 0 30px rgba(255,220,200,0.25); }
-  50% { opacity: 1; text-shadow: 0 0 80px rgba(255,220,200,0.5), 0 0 160px rgba(255,200,180,0.2); }
-}
-
-#verdict-sub {
-  font-size: 1rem;
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
+  gap: 0.2rem;
   text-align: center;
+}
+
+#header-label {
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+#display-target {
+  font-size: clamp(2.2rem, 7vw, 4.5rem);
+  font-weight: 100;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  line-height: 1.1;
+  max-width: 820px;
+  word-break: break-word;
 }
 
 /* ── Countdown Tiles ── */
@@ -220,7 +344,7 @@ body {
 }
 
 @keyframes flash-tick {
-  0% { opacity: 0.45; transform: scale(1.06); }
+  0% { opacity: 0.4; transform: scale(1.06); }
   100% { opacity: 1; transform: scale(1); }
 }
 
@@ -257,7 +381,11 @@ footer {
 
 /* ── Mobile ── */
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
+  .form-row.two-col {
+    grid-template-columns: 1fr;
+  }
+
   .time-unit {
     min-width: 68px;
     padding: 0.9rem 0.7rem;
@@ -265,9 +393,5 @@ footer {
 
   #countdown {
     gap: 0.4rem;
-  }
-
-  #question-block h1 {
-    font-size: clamp(1.5rem, 6vw, 2.5rem);
   }
 }
