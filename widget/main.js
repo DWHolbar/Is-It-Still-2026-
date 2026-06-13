@@ -8,6 +8,7 @@ const path = require('path');
 const fs   = require('fs');
 
 const CONFIG_FILE = path.join(app.getPath('userData'), 'dayuntil-event.json');
+const PROTOCOL    = 'daysuntil';
 
 let mainWindow = null;
 let tray       = null;
@@ -18,7 +19,11 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0);
 }
 
-app.on('second-instance', () => {
+app.on('second-instance', (_event, argv) => {
+  // Windows: protocol URL arrives as a CLI arg in the second instance
+  const url = argv.find(arg => arg.startsWith(`${PROTOCOL}://`));
+  if (url) handleProtocolUrl(url);
+
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.show();
@@ -26,13 +31,29 @@ app.on('second-instance', () => {
   }
 });
 
-// ── App lifecycle ──────────────────────────────────────────
-app.whenReady().then(() => {
-  createWindow();
-  createTray();
+// macOS: protocol URL when the app is already running
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  handleProtocolUrl(url);
+  if (mainWindow) { mainWindow.show(); mainWindow.focus(); }
 });
 
-// Keep running when all windows are closed (lives in tray/dock)
+// ── App lifecycle ──────────────────────────────────────────
+app.whenReady().then(() => {
+  app.setAsDefaultProtocolClient(PROTOCOL);
+
+  createWindow();
+  createTray();
+
+  // Windows: on first launch via protocol, URL is in argv
+  const protocolUrl = process.argv.find(arg => arg.startsWith(`${PROTOCOL}://`));
+  if (protocolUrl) {
+    // Delay until the window is ready to receive IPC
+    setTimeout(() => handleProtocolUrl(protocolUrl), 800);
+  }
+});
+
+// Keep running in tray when all windows are closed
 app.on('window-all-closed', () => { /* intentionally empty */ });
 
 // macOS: re-show on dock click
@@ -40,6 +61,27 @@ app.on('activate', () => {
   if (mainWindow) mainWindow.show();
   else createWindow();
 });
+
+// ── Protocol URL handler ───────────────────────────────────
+function handleProtocolUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== 'add') return;
+
+    const name  = parsed.searchParams.get('name')  || '';
+    const date  = parsed.searchParams.get('date')  || '';
+    const type  = parsed.searchParams.get('type')  || 'Other';
+    const emoji = parsed.searchParams.get('emoji') || '';
+
+    const config = validateConfig({ name, date, type, emoji });
+    if (!config) return;
+
+    writeConfig(config);
+    mainWindow?.webContents.send('config-updated', config);
+  } catch {
+    // Ignore malformed URLs
+  }
+}
 
 // ── Window ─────────────────────────────────────────────────
 function createWindow() {
@@ -80,7 +122,7 @@ function buildTrayIcon() {
     return nativeImage.createFromPath(assetPath);
   }
 
-  // Programmatic 16x16 purple circle fallback
+  // Programmatic 16×16 purple circle fallback
   const size = 16;
   const buf  = Buffer.alloc(size * size * 4, 0);
   const cx = size / 2, cy = size / 2, r = (size / 2) - 1;
@@ -162,7 +204,7 @@ function writeConfig(config) {
   }
 }
 
-// ── Import flow ────────────────────────────────────────────
+// ── Import flow (manual file picker fallback) ──────────────
 async function runImport() {
   const result = await dialog.showOpenDialog(mainWindow ?? undefined, {
     title:       'Import Days Until Event Config',
@@ -198,9 +240,9 @@ async function runImport() {
 }
 
 // ── IPC handlers ───────────────────────────────────────────
-ipcMain.handle('get-config', ()         => readConfig());
-ipcMain.handle('save-config', (_, cfg)  => writeConfig(cfg));
-ipcMain.handle('import-config', ()      => runImport());
+ipcMain.handle('get-config',    ()        => readConfig());
+ipcMain.handle('save-config',   (_, cfg)  => writeConfig(cfg));
+ipcMain.handle('import-config', ()        => runImport());
 
-ipcMain.on('quit-app',          ()      => app.quit());
-ipcMain.on('set-always-on-top', (_, v)  => mainWindow?.setAlwaysOnTop(Boolean(v)));
+ipcMain.on('quit-app',          ()        => app.quit());
+ipcMain.on('set-always-on-top', (_, v)    => mainWindow?.setAlwaysOnTop(Boolean(v)));

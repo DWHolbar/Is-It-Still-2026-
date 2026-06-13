@@ -120,7 +120,7 @@
       </div>
     </section>
 
-    <!-- Action buttons: Google Calendar + Widget download -->
+    <!-- Action buttons -->
     <div id="action-btns">
       <button id="gcal-btn" class="hidden">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -136,11 +136,17 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="2" y="3" width="20" height="14" rx="2"/>
           <path d="M8 21h8M12 17v4"/>
-          <path d="M7 8h.01M11 8h.01M15 8h.01"/>
+          <circle cx="12" cy="10" r="2" fill="currentColor" stroke="none"/>
         </svg>
-        Download Widget Config
+        Add to Desktop Widget
       </button>
     </div>
+
+    <!-- Widget install note (shown when widget-btn is visible) -->
+    <p id="widget-note" class="hidden">
+      Widget app not installed yet?
+      <a href="https://github.com/DWHolbar/Is-It-Still-2026-/releases/latest" target="_blank" rel="noopener noreferrer">Download for Windows &amp; macOS →</a>
+    </p>
 
     <!-- Mood picker -->
     <div id="mood-picker">

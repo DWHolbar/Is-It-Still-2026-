@@ -15,6 +15,12 @@
     "directories": {
       "output": "dist"
     },
+    "protocols": [
+      {
+        "name": "Days Until",
+        "schemes": ["daysuntil"]
+      }
+    ],
     "files": [
       "main.js",
       "preload.js",

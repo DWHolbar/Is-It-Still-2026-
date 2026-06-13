@@ -470,7 +470,7 @@ body.show-weeks #tile-weeks { display: flex; }
   border-color: rgba(255, 255, 255, 0.35);
 }
 
-/* Widget download button */
+/* Add to Desktop Widget button */
 #widget-btn {
   display: flex;
   align-items: center;
@@ -494,6 +494,28 @@ body.show-weeks #tile-weeks { display: flex; }
   background: var(--glass-hover);
   color: var(--text-primary);
   border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Widget install note ── */
+
+#widget-note {
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin-top: -0.6rem;
+}
+
+#widget-note a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+#widget-note a:hover {
+  color: var(--text-primary);
 }
 
 /* ── Mood Picker ── */

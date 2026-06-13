@@ -80,16 +80,16 @@ function initModeTabs() {
       document.getElementById('panel-event').classList.toggle('hidden', m !== 'event');
 
       if (m === 'year') {
-        hide('widget-btn');
+        hideWidget();
         setTarget(String(selectedYear));
       } else if (activeEvent) {
-        show('widget-btn');
+        showWidget();
         setTarget(activeEvent.label);
       } else {
         document.getElementById('display-target').textContent = '—';
         document.title = 'Days Until';
         hide('gcal-btn');
-        hide('widget-btn');
+        hideWidget();
         stopTimer();
       }
     });
@@ -141,7 +141,7 @@ function submitEvent() {
 
   activeEvent = { label, date: eventDate, type, emoji };
   mode = 'event';
-  show('widget-btn');
+  showWidget();
   setTarget(label);
 }
 
@@ -178,31 +178,35 @@ function fmtDate(d) {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
 }
 
-// ── Widget config download ─────────────────────────────────
+// ── Desktop widget ─────────────────────────────────────────
 
 function initWidgetBtn() {
-  document.getElementById('widget-btn').addEventListener('click', downloadWidgetConfig);
+  document.getElementById('widget-btn').addEventListener('click', addToDesktopWidget);
 }
 
-function downloadWidgetConfig() {
+function addToDesktopWidget() {
   if (!activeEvent) return;
 
-  const config = {
+  // Open the daysuntil:// protocol URL — the installed widget app receives it
+  // and updates its countdown without any file download needed.
+  const params = new URLSearchParams({
     name:  activeEvent.label,
     date:  `${activeEvent.date.getFullYear()}-${pad(activeEvent.date.getMonth() + 1)}-${pad(activeEvent.date.getDate())}`,
     type:  activeEvent.type  || 'Other',
     emoji: activeEvent.emoji || '',
-  };
+  });
 
-  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'dayuntil-event.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  window.location.href = `daysuntil://add?${params.toString()}`;
+}
+
+function showWidget() {
+  show('widget-btn');
+  show('widget-note');
+}
+
+function hideWidget() {
+  hide('widget-btn');
+  hide('widget-note');
 }
 
 // ── Mood picker ────────────────────────────────────────────
