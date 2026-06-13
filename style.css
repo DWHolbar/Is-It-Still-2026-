@@ -434,6 +434,15 @@ body.show-weeks #tile-weeks { display: flex; }
   line-height: 1.7;
 }
 
+/* ── Action buttons row ── */
+
+#action-btns {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 /* ── Google Calendar Button ── */
 
 #gcal-btn {
@@ -456,6 +465,32 @@ body.show-weeks #tile-weeks { display: flex; }
 }
 
 #gcal-btn:hover {
+  background: var(--glass-hover);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Widget download button */
+#widget-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+#widget-btn:hover {
   background: var(--glass-hover);
   color: var(--text-primary);
   border-color: rgba(255, 255, 255, 0.35);

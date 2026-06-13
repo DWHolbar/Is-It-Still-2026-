@@ -1,10 +1,29 @@
 const YEAR_FROM = 2027;
 const YEAR_TO   = 2050;
 
+const EVENT_EMOJIS = {
+  'Birthday':       '🎂',
+  'Anniversary':    '💍',
+  'Wedding':        '💒',
+  'Baby Shower':    '👶',
+  'Party':          '🎉',
+  'Graduation':     '🎓',
+  'Vacation':       '✈️',
+  'Moving Day':     '🏠',
+  'New Job':        '💼',
+  'Holiday':        '🎄',
+  'Concert':        '🎵',
+  'Reunion':        '🤝',
+  'Retirement':     '🌴',
+  'New Year':       '🥂',
+  "Valentine's Day":'💕',
+  'Other':          '📅',
+};
+
 let mode        = 'year';   // 'year' | 'event'
 let displayMode = 'days';   // 'days' | 'weeks'
 let selectedYear = YEAR_FROM;
-let activeEvent  = null;    // { label, date }
+let activeEvent  = null;    // { label, date, type, emoji }
 let timerHandle  = null;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDisplayToggle();
   initEventForm();
   initGCalBtn();
+  initWidgetBtn();
   initMoodPicker();
   setTarget(String(selectedYear));
 });
@@ -60,13 +80,16 @@ function initModeTabs() {
       document.getElementById('panel-event').classList.toggle('hidden', m !== 'event');
 
       if (m === 'year') {
+        hide('widget-btn');
         setTarget(String(selectedYear));
       } else if (activeEvent) {
+        show('widget-btn');
         setTarget(activeEvent.label);
       } else {
         document.getElementById('display-target').textContent = '—';
         document.title = 'Days Until';
-        document.getElementById('gcal-btn').classList.add('hidden');
+        hide('gcal-btn');
+        hide('widget-btn');
         stopTimer();
       }
     });
@@ -114,9 +137,11 @@ function submitEvent() {
   const [y, m, d] = dateStr.split('-').map(Number);
   const eventDate = new Date(y, m - 1, d, 0, 0, 0, 0);
   const label     = nameRaw || `your ${type}`;
+  const emoji     = EVENT_EMOJIS[type] || '';
 
-  activeEvent = { label, date: eventDate };
+  activeEvent = { label, date: eventDate, type, emoji };
   mode = 'event';
+  show('widget-btn');
   setTarget(label);
 }
 
@@ -151,6 +176,33 @@ function openGoogleCalendar() {
 
 function fmtDate(d) {
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+}
+
+// ── Widget config download ─────────────────────────────────
+
+function initWidgetBtn() {
+  document.getElementById('widget-btn').addEventListener('click', downloadWidgetConfig);
+}
+
+function downloadWidgetConfig() {
+  if (!activeEvent) return;
+
+  const config = {
+    name:  activeEvent.label,
+    date:  `${activeEvent.date.getFullYear()}-${pad(activeEvent.date.getMonth() + 1)}-${pad(activeEvent.date.getDate())}`,
+    type:  activeEvent.type  || 'Other',
+    emoji: activeEvent.emoji || '',
+  };
+
+  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'dayuntil-event.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ── Mood picker ────────────────────────────────────────────

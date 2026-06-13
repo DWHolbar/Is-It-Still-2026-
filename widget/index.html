@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self'; script-src 'self'">
+  <title>Days Until</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="widget">
+
+    <!-- Drag region / header -->
+    <div id="header" class="drag-region">
+      <span id="header-label">days until</span>
+      <div id="header-controls" class="no-drag">
+        <button id="import-btn" title="Import event config" aria-label="Import config">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </button>
+        <button id="pin-btn" title="Toggle always on top" aria-label="Toggle pin" aria-pressed="true">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M16 2l-2 2-6 6-2 2 3 3-5 5v2h2l5-5 3 3 2-2 6-6 2-2z"/>
+          </svg>
+        </button>
+        <button id="close-btn" title="Close widget" aria-label="Close">&#215;</button>
+      </div>
+    </div>
+
+    <!-- Event name -->
+    <p id="event-name">—</p>
+
+    <!-- Countdown tiles -->
+    <div id="tiles">
+      <div class="tile">
+        <span class="num" id="val-days">—</span>
+        <span class="lbl">days</span>
+      </div>
+      <div class="tile">
+        <span class="num" id="val-hours">—</span>
+        <span class="lbl">hrs</span>
+      </div>
+      <div class="tile">
+        <span class="num" id="val-minutes">—</span>
+        <span class="lbl">min</span>
+      </div>
+      <div class="tile">
+        <span class="num" id="val-seconds">—</span>
+        <span class="lbl">sec</span>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="no-event" class="hidden">
+      <p>No event set.</p>
+      <button id="import-btn-empty">Import config file</button>
+    </div>
+
+    <!-- Past-event label -->
+    <p id="past-label" class="hidden">ago</p>
+
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
